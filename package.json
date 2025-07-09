@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "etl": "node src/extract/fetchData.js && node src/transform/transformData.js && node src/load/pushToDb.js"
   },
   "keywords": [],
   "author": "",
@@ -11,7 +12,9 @@
   "type": "module",
   "description": "",
   "dependencies": {
-    "dotenv": "^17.0.1",
-    "googleapis": "^150.0.1"
+    "dotenv": "^17.1.0",
+    "express": "^5.1.0",
+    "googleapis": "^150.0.1",
+    "pg": "^8.16.3"
   }
 }

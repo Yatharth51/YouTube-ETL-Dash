@@ -21,7 +21,6 @@ const youtube = google.youtube({
 })
 
 const fetchVideosByChannel = async (channelId, maxResults = 15) => {
-
     try {
         const res = await youtube.search.list({
             part: "snippet",
@@ -31,16 +30,49 @@ const fetchVideosByChannel = async (channelId, maxResults = 15) => {
             type: "video"
         });
 
-        return res.data.items.map((item)=>({
-            videoId : item.id.videoId,
-            title : item.snippet.title,
-            publishedAt : item.snippet.publishedAt,
-            description : item.snippet.description ,
-            channelTitle : item.snippet.channelTitle
-        }))
-    }
-    catch(e){
-        console.log(`Failed to fetch Videos by Channel due to ${e.message}`) ;
+        const items = res.data.items;
+        const videoIds = items.map(item => item.id.videoId).join(',');
+
+        // Fetch statistics and snippet for viewCount and categoryId
+        const statsRes = await youtube.videos.list({
+            part: "statistics,snippet",
+            id: videoIds
+        });
+
+        const statsMap = {};
+        statsRes.data.items.forEach(item => {
+            statsMap[item.id] = {
+                viewCount: item.statistics.viewCount,
+                categoryId: item.snippet.categoryId
+            };
+        });
+
+        const categoryIds = [
+            ...new Set(statsRes.data.items.map(item => item.snippet.categoryId))
+        ].join(',');
+
+        // Fetch category names
+        const catRes = await youtube.videoCategories.list({
+            part: "snippet",
+            id: categoryIds,
+        });
+        const categoryMap = {};
+        catRes.data.items.forEach(cat => {
+            categoryMap[cat.id] = cat.snippet.title;
+        });
+
+        return items.map(item => ({
+            channelId,
+            videoId: item.id.videoId,
+            title: item.snippet.title,
+            publishedAt: item.snippet.publishedAt,
+            description: item.snippet.description,
+            channelTitle: item.snippet.channelTitle,
+            viewCount: statsMap[item.id.videoId]?.viewCount || null,
+            category: categoryMap[statsMap[item.id.videoId]?.categoryId] || null,
+        }));
+    } catch (e) {
+        console.log(`Failed to fetch Videos by Channel due to ${e.message}`);
     }
 }
 
@@ -53,13 +85,45 @@ const fetchTopViewedVideos = async (channelId, maxResults = 5) => {
             order : "viewCount" ,
             type : "video"
         }) ;
+        const items = res.data.items;
+        const videoIds = items.map(item => item.id.videoId).join(',');
+
+        const statsRes = await youtube.videos.list({
+            part: "statistics,snippet",
+            id: videoIds
+        });
+
+        const statsMap = {};
+        statsRes.data.items.forEach(item => {
+            statsMap[item.id] = {
+              viewCount: item.statistics.viewCount,
+              categoryId : item.snippet.categoryId
+            };
+        });
+
+        const categoryIds = [
+            ...new Set(statsRes.data.items.map(item => item.snippet.categoryId))
+        ].join(',');
+
+        // Fetch category names
+        const catRes = await youtube.videoCategories.list({
+            part: "snippet",
+            id: categoryIds,
+        });
+        const categoryMap = {};
+        catRes.data.items.forEach(cat => {
+            categoryMap[cat.id] = cat.snippet.title;
+        });
 
         return res.data.items.map((item)=>({
+            channelId,
             videoId : item.id.videoId,
             title : item.snippet.title,
             publishedAt : item.snippet.publishedAt,
             description : item.snippet.description ,
-            channelTitle : item.snippet.channelTitle
+            channelTitle : item.snippet.channelTitle,
+            viewCount: statsMap[item.id.videoId].viewCount || null,
+            category: categoryMap[statsMap[item.id.videoId]?.categoryId] || null,
         }))
 
     }
@@ -76,6 +140,7 @@ const fetchChannelMetadata = async (channelId) => {
 
   const ch = res.data.items[0];
   return {
+    channelId,
     title: ch.snippet.title,
     description: ch.snippet.description,
     publishedAt: ch.snippet.publishedAt,
@@ -102,6 +167,7 @@ const fetchChannelStats = async (channelId) => {
   const max = Math.max(...viewsArray);
 
   return {
+    channelId,
     totalVideos: viewsArray.length,
     averageViews: avg,
     minViews: min,

@@ -96,7 +96,7 @@ const fetchChannelStats = async (channelId) => {
 
   const viewsArray = res.data.items.map(item => parseInt(item.statistics.viewCount, 10));
 
-  const total = viewsArray.reduce((a, b) => a + b, 0);
+  const total = viewsArray.reduce((a, b) => a + b, 0); 
   const avg = (total / viewsArray.length).toFixed(0);
   const min = Math.min(...viewsArray);
   const max = Math.max(...viewsArray);

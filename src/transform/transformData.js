@@ -19,7 +19,7 @@ const writeJson = (filename,data) => {
     console.log("Transformed file Saved\n") ;
 }
 
-// channelMeta data tranform
+
 const channelMeta = JSON.parse(fs.readFileSync(path.join(inputDir, "channel_metadata.json"), "utf-8"));
 const transformedMeta = {
   channelId : channelMeta.channelId,
@@ -32,7 +32,7 @@ const transformedMeta = {
 };
 writeJson("channel_metadata_transformed.json", transformedMeta);
 
-//channelStats transform
+
 const channelStats = JSON.parse(fs.readFileSync(path.join(inputDir, "channel_stats.json"), "utf-8"));
 const transformedStats = {
   channelId : channelStats.channelId,

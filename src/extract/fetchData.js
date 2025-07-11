@@ -33,7 +33,7 @@ const fetchVideosByChannel = async (channelId, maxResults = 15) => {
         const items = res.data.items;
         const videoIds = items.map(item => item.id.videoId).join(',');
 
-        // Fetch statistics and snippet for viewCount and categoryId
+        // Fetching stats and snippet for viewcount and categoryId
         const statsRes = await youtube.videos.list({
             part: "statistics,snippet",
             id: videoIds
@@ -105,7 +105,7 @@ const fetchTopViewedVideos = async (channelId, maxResults = 5) => {
             ...new Set(statsRes.data.items.map(item => item.snippet.categoryId))
         ].join(',');
 
-        // Fetch category names
+        
         const catRes = await youtube.videoCategories.list({
             part: "snippet",
             id: categoryIds,
@@ -151,7 +151,7 @@ const fetchChannelMetadata = async (channelId) => {
 }
 
 const fetchChannelStats = async (channelId) => {
-  const videos = await fetchVideosByChannel(channelId, 25); // Fetch 25 recent
+  const videos = await fetchVideosByChannel(channelId, 25); // Fetchin 25 rec
   const videoIds = videos.map(v => v.videoId).join(',');
 
   const res = await youtube.videos.list({

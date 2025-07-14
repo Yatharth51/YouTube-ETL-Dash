@@ -33,7 +33,7 @@ const fetchVideosByChannel = async (channelId, maxResults = 15) => {
         const items = res.data.items;
         const videoIds = items.map(item => item.id.videoId).join(',');
 
-        // Fetching stats and snippet for viewcount and categoryId
+        // Fetching stats and snippet for viewcount and categoryid
         const statsRes = await youtube.videos.list({
             part: "statistics,snippet",
             id: videoIds

@@ -1,9 +1,11 @@
 import express from "express" ;
 import {Client} from "pg" ;
 import dotenv from "dotenv" ;
+import cors from "cors";
 dotenv.config();
 
 const app = express() ;
+app.use(cors());
 const PORT = process.env.PORT; 
 
 const pgClient = new Client(process.env.POSTGRES_KEY) ;

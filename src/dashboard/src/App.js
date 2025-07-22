@@ -61,8 +61,8 @@ function App() {
     fetchData();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div className="loading">Loading...</div>;
+  if (error) return <div className="error">Error: {error}</div>;
 
   // Chart data
   const videoViewsData = {
@@ -112,39 +112,41 @@ function App() {
   };
 
   return (
-    <div className="App" style={{ padding: 32 }}>
+    <div className="App">
       <h1>YouTube Channel Dashboard</h1>
       {channelMeta && (
-        <div style={{ marginBottom: 24 }}>
+        <div className="card">
           <h2>{channelMeta.title}</h2>
           <p>{channelMeta.description}</p>
-          <p><b>Subscribers:</b> {channelMeta.subscribers}</p>
-          <p><b>Videos:</b> {channelMeta.video_count}</p>
-          <p><b>Total Views:</b> {channelMeta.view_count}</p>
+          <div className="stats-list">
+            <li><b>Subscribers</b><br />{channelMeta.subscribers}</li>
+            <li><b>Videos</b><br />{channelMeta.video_count}</li>
+            <li><b>Total Views</b><br />{channelMeta.view_count}</li>
+          </div>
         </div>
       )}
       {channelStats && (
-        <div style={{ marginBottom: 24 }}>
+        <div className="card">
           <h3>Channel Stats</h3>
-          <ul>
-            <li>Total Videos: {channelStats.total_videos}</li>
-            <li>Average Views: {channelStats.average_views}</li>
-            <li>Min Views: {channelStats.min_views}</li>
-            <li>Max Views: {channelStats.max_views}</li>
+          <ul className="stats-list">
+            <li>Total Videos<br />{channelStats.total_videos}</li>
+            <li>Average Views<br />{channelStats.average_views}</li>
+            <li>Min Views<br />{channelStats.min_views}</li>
+            <li>Max Views<br />{channelStats.max_views}</li>
           </ul>
         </div>
       )}
-      <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: 300 }}>
+      <div className="charts-row">
+        <div className="chart-card" style={{padding: '32px 32px 24px 32px'}}>
           <h3>Top Videos by Views</h3>
           <Bar data={videoViewsData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
         </div>
-        <div style={{ flex: 1, minWidth: 300 }}>
+        <div className="chart-card">
           <h3>Top Video Categories</h3>
           <Pie data={categoryData} />
         </div>
       </div>
-      <div style={{ marginTop: 32 }}>
+      <div className="chart-card">
         <h3>All Videos - Views Trend</h3>
         <Line data={allVideoViews} options={{ responsive: true }} />
       </div>
